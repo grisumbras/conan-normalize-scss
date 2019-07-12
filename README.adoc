@@ -1,0 +1,42 @@
+= conan-normalize-scss _(normalize-scss)_
+
+____
+https://github.com/JohnAlbin/normalize-scss[normalize-scss] packaged for
+https://conan.io[Conan]
+____
+
+== Install
+
+Add the necessary conan remote:
+
+[source,shell]
+----
+$ conan remote add grisumbras https://api.bintray.com/conan/grisumbras/conan
+----
+
+Then inside `conanfile.py`:
+[source,python]
+----
+class MyPackage(ConanFile):
+  requires = ["normalize-scss/7.0.1"]
+----
+
+or inside `conanfile.txt`:
+[source,ini]
+----
+[requires]
+normalize-scss/7.0.1
+----
+
+== Usage
+
+== API
+
+== Maintainer
+Dmitry Arkhipov <grisumbras@gmail.com>
+
+== Contributing
+Patches welcome!
+
+== License
+link:LICENSE[BSL-1.0] (C) 2019 Dmitry Arkhipov
