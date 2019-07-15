@@ -8,6 +8,7 @@ from conans import (
     ConanFile,
     tools,
 )
+import os
 
 
 class NormalizeScssConan(ConanFile):
@@ -19,13 +20,29 @@ class NormalizeScssConan(ConanFile):
     license = "MIT"
 
     def source(self):
-        pass
+        tools.get(
+            "https://github.com/JohnAlbin/normalize-scss/archive/7.0.1.tar.gz",
+            sha256="9292360981046536bf5320238117061df3078e11f71df3d19f93af9adadca334",
+        )
 
     def build(self):
         pass
 
     def package(self):
-        pass
+        self.copy(
+            "*.scss",
+            src=os.path.join(self._src_subfolder, "sass"),
+            dst=os.path.join("share", "%s" % self.name),
+        )
 
     def package_info(self):
+        self.env_info.SASS_PATH = [
+            os.path.join(self.package_folder, "share", self.name),
+        ]
+
+    def package_id(self):
         self.info.header_only()
+
+    @property
+    def _src_subfolder(self):
+        return "%s-%s" % (self.name, self.version)
