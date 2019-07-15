@@ -1,12 +1,10 @@
 = conan-normalize-scss _(normalize-scss)_
-
 ____
 https://github.com/JohnAlbin/normalize-scss[normalize-scss] packaged for
 https://conan.io[Conan]
 ____
 
 == Install
-
 Add the necessary conan remote:
 
 [source,shell]
@@ -29,8 +27,16 @@ normalize-scss/7.0.1
 ----
 
 == Usage
+The package sets `SASS_PATH` environment variable for consumers, which allows
+Ruby Sass implementation to find normalize-scss files. Unfortunately, many
+other Sass implementations (including C implementation -- sassc) does not yet
+support the environment variable. In order to circumvent this problem you can
+manually transform the variable's conents into command-line parameters to a
+tool (see link:test_package/test.sh[test script] for an example).
 
-== API
+For documentation on how to use normalize-scss inside your Sass files see
+https://github.com/JohnAlbin/normalize-scss#how-to-use-it[usage section] in
+it's own documentation.
 
 == Maintainer
 Dmitry Arkhipov <grisumbras@gmail.com>
