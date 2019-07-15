@@ -17,14 +17,14 @@ Then inside `conanfile.py`:
 [source,python]
 ----
 class MyPackage(ConanFile):
-  requires = ["normalize-scss/7.0.1"]
+  requires = ["normalize-scss/7.0.1@grisumbras/testing"]
 ----
 
 or inside `conanfile.txt`:
 [source,ini]
 ----
 [requires]
-normalize-scss/7.0.1
+normalize-scss/7.0.1@grisumbras/testing
 ----
 
 == Usage
