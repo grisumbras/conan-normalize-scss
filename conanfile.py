@@ -8,41 +8,68 @@ from conans import (
     ConanFile,
     tools,
 )
+import io
 import os
+import re
 
 
-class NormalizeScssConan(ConanFile):
-    name = "normalize-scss"
-    version = "7.0.1"
-    description = "Sass version of Normalize.css"
-    homepage = "https://github.com/JohnAlbin/normalize-scss"
-    url = "http://github.com/grisumbras/conan-normalize-scss"
+class NormalizeSassConan(ConanFile):
+    name = "normalize-sass"
+    description = "Sass version of normalize.css"
+    homepage = "https://github.com/necolas/normalize.css"
+    url = "http://github.com/grisumbras/normalize-sass"
     license = "MIT"
+
+    exports_sources = "LICENSE", "sass/*.scss"
 
     def source(self):
         tools.get(
-            "https://github.com/JohnAlbin/normalize-scss/archive/7.0.1.tar.gz",
-            sha256="9292360981046536bf5320238117061df3078e11f71df3d19f93af9adadca334",
+            "https://github.com/necolas/normalize.css/archive/{version}.{ext}"
+            .format(version=self.version, ext=self._os_ext)
         )
+        os.rename(
+            os.path.join(self._src_subfolder, "normalize.css"),
+            "normalize.css",
+        )
+        os.rename(
+            os.path.join(self._src_subfolder, "LICENSE.md"),
+            "LICENSE.md",
+        )
+        tools.rmdir(self._src_subfolder)
 
     def build(self):
-        pass
+        in_comment = False
+        tools.mkdir("sass/normalize")
+        with open("sass/normalize/mixin.scss", "w") as dst:
+            dst.write("@mixin normalize() {\n")
+            src = os.path.join(self.source_folder, "normalize.css")
+            with open(src, "r") as src:
+                for line in src:
+                    if in_comment:
+                        line = "// " + line
+                    else:
+                        line, in_comment = re.subn(r"/\*+", "//", line)
+                    if in_comment:
+                        line, in_comment = re.subn(r"\*/", "", line)
+                        in_comment = not in_comment
+                    dst.write(line)
+            dst.write("}\n")
 
     def package(self):
-        self.copy(
-            "*.scss",
-            src=os.path.join(self._src_subfolder, "sass"),
-            dst=os.path.join("share", "%s" % self.name),
-        )
+        self.copy("*.scss", dst="share")
+        self.copy("LICENSE", dst="share/normalize-sass")
+        self.copy("LICENSE.md", dst="share/normalize.css")
 
     def package_info(self):
-        self.env_info.SASS_PATH = [
-            os.path.join(self.package_folder, "share", self.name),
-        ]
+        self.env_info.SASS_PATH = [os.path.join(self.package_folder, "share")]
 
     def package_id(self):
         self.info.header_only()
 
     @property
+    def _os_ext(self):
+        return "zip" if tools.os_info.is_windows else "tar.gz"
+
+    @property
     def _src_subfolder(self):
-        return "%s-%s" % (self.name, self.version)
+        return "normalize.css-%s" % self.version
