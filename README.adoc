@@ -1,43 +1,57 @@
-= conan-normalize-scss _(normalize-scss)_
+= normalize-sass
+:version: 8.0.1
+
+image:https://api.bintray.com/packages/grisumbras/conan/normalize-sass%3Agrisumbras/images/download.svg?version={version}%3Astable[Download,link=https://bintray.com/grisumbras/conan/normalize-sass%3Agrisumbras/{version}%3Astable/link]
+image:https://github.com/grisumbras/normalize-sass/workflows/Build/badge.svg?branch=master[Build status,link=https://github.com/grisumbras/normalize-sass/actions]
 
 ____
-https://github.com/JohnAlbin/normalize-scss[normalize-scss] packaged for
-https://conan.io[Conan]
+https://sass-lang.com[Sass] version of
+https://github.com/necolas/normalize.css[normalize.css]
 ____
 
 == Install
-Add the necessary conan remote:
+Add the necessary https://conan.io[Conan] remote:
 
 [source,shell]
 ----
 $ conan remote add grisumbras https://api.bintray.com/conan/grisumbras/conan
 ----
 
-Then inside `conanfile.py`:
-[source,python]
-----
-class MyPackage(ConanFile):
-  requires = ["normalize-scss/7.0.1@grisumbras/testing"]
-----
-
-or inside `conanfile.txt`:
-[source,ini]
+Add it to the list of requirements inside your `conanfile.txt`:
+[source,ini,subs="attributes+"]
 ----
 [requires]
-normalize-scss/7.0.1@grisumbras/testing
+normalize-sass/{version}@grisumbras/stable
 ----
+
+or inside your `conanfile.py`:
+[source,py,subs="attributes+"]
+----
+class YourConan(ConanFile):
+    requires = "normalize-sass/{version}@grisumbras/stable"
+----
+
 
 == Usage
 The package sets `SASS_PATH` environment variable for consumers, which allows
-Ruby Sass implementation to find normalize-scss files. Unfortunately, many
+Ruby Sass implementation to find normalize-sass files. Unfortunately, many
 other Sass implementations (including C implementation -- sassc) does not yet
 support the environment variable. In order to circumvent this problem you can
 manually transform the variable's conents into command-line parameters to a
 tool (see link:test_package/test.sh[test script] for an example).
 
-For documentation on how to use normalize-scss inside your Sass files see
-https://github.com/JohnAlbin/normalize-scss#how-to-use-it[usage section] in
-it's own documentation.
+In order to actually use normalize-sass in your Sass files do
+[source,sass]
+----
+@import "normalize";
+@include normalize();
+----
+
+or simply
+[source,sass]
+----
+@import "normalize/include";
+----
 
 == Maintainer
 Dmitry Arkhipov <grisumbras@gmail.com>
