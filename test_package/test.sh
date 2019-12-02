@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 old_ifs="$IFS"
 IFS=:
 for dir in $SASS_PATH; do
