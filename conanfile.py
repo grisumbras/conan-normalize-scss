@@ -27,15 +27,13 @@ class NormalizeSassConan(ConanFile):
             "https://github.com/necolas/normalize.css/archive/{version}.{ext}"
             .format(version=self.version, ext=self._os_ext)
         )
+
+        _src_subfolder = "normalize.css-%s" % self.version
         os.rename(
-            os.path.join(self._src_subfolder, "normalize.css"),
-            "normalize.css",
+            os.path.join(_src_subfolder, "normalize.css"), "normalize.css"
         )
-        os.rename(
-            os.path.join(self._src_subfolder, "LICENSE.md"),
-            "LICENSE.md",
-        )
-        tools.rmdir(self._src_subfolder)
+        os.rename(os.path.join(_src_subfolder, "LICENSE.md"), "LICENSE.md")
+        tools.rmdir(_src_subfolder)
 
     def build(self):
         in_comment = False
@@ -61,7 +59,9 @@ class NormalizeSassConan(ConanFile):
         self.copy("LICENSE.md", dst="share/normalize.css")
 
     def package_info(self):
-        self.env_info.SASS_PATH = [os.path.join(self.package_folder, "share")]
+        self.env_info.SASS_PATH = [
+            os.path.join(self.package_folder, "share", "sass")
+        ]
 
     def package_id(self):
         self.info.header_only()
@@ -69,7 +69,3 @@ class NormalizeSassConan(ConanFile):
     @property
     def _os_ext(self):
         return "zip" if tools.os_info.is_windows else "tar.gz"
-
-    @property
-    def _src_subfolder(self):
-        return "normalize.css-%s" % self.version

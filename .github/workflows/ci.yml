@@ -1,0 +1,69 @@
+name: Build
+
+on: push
+
+env:
+  CONAN_UPLOAD: https://api.bintray.com/conan/grisumbras/conan
+  CONAN_LOGIN_USERNAME: grisumbras
+  CONAN_USERNAME: grisumbras
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        version: [8.0.1]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull sources
+        uses: actions/checkout@v1
+
+      - name: Configure Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install CPT
+        run: pip install conan_package_tools
+
+      - name: Enable uploads from master
+        if: github.event.ref == 'refs/heads/master'
+        run: echo "::set-env name=CONAN_PASSWORD::$CONAN_PASSWORD"
+        env:
+          CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
+
+      - name: Run CPT
+        run: python build.py
+        env:
+          CONAN_STABLE_BRANCH_PATTERN: '---'
+          CONAN_REFERENCE: normalize-sass/${{ matrix.version }}@${{ env.CONAN_USERNAME }}/testing
+
+  publish:
+    needs: build
+
+    if: github.event.ref == 'refs/heads/master'
+
+    strategy:
+      matrix:
+        version: [8.0.1]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Promote testing packages to stable
+        run: |
+          pip install conan
+          conan remote add upload $CONAN_UPLOAD
+          conan download $CONAN_REFERENCE -r upload
+          conan copy $CONAN_REFERENCE $CONAN_USERNAME/stable --all
+          conan user -r upload $CONAN_LOGIN_USERNAME -p "$CONAN_PASSWORD"
+          conan upload -r upload --all --confirm normalize-sass/*@$CONAN_USERNAME/stable
+        env:
+          CONAN_REFERENCE: normalize-sass/${{ matrix.version }}@${{ env.CONAN_USERNAME }}/testing
+          CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
