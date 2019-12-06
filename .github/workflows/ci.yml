@@ -48,6 +48,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Pull sources
+        uses: actions/checkout@v1
+
       - name: Configure Python
         uses: actions/setup-python@v1
         with:

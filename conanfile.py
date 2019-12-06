@@ -16,9 +16,12 @@ import re
 class NormalizeSassConan(ConanFile):
     name = "normalize-sass"
     description = "Sass version of normalize.css"
+    author = "Dmitry Arkhipov <grisumbras@gmail.com>"
+    license = "MIT"
     homepage = "https://github.com/necolas/normalize.css"
     url = "http://github.com/grisumbras/normalize-sass"
-    license = "MIT"
+    default_user = "grisumbras"
+    default_channel = "testing"
 
     exports_sources = "LICENSE", "sass/*.scss"
 
